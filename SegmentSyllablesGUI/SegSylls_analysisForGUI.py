@@ -8,6 +8,7 @@ import glob
 from skimage.measure import label, regionprops
 
 class SyllableAnalysis(object):
+
     def __init__(self, filepath, output_path):
 
         # file names
@@ -154,12 +155,23 @@ class SyllableAnalysis(object):
                                                                                           start:stop]))
         return sonogram_self_correlation
 
+
     def calc_syllable_correlation(self, a, b, shift_factor, min_length, max_overlap):
-        syllable_correlation = []
+        syllable_correlation = [None] * (shift_factor+1)
+        # syllable_correlation = []
+        s2 = []
+        m_overlap = 100./max_overlap
         for m in range(shift_factor + 1):
             syll_1 = self.threshold_sonogram[:, self.onsets[a]:(self.onsets[a] + min_length)]
             syll_2 = self.threshold_sonogram[:, (self.onsets[b] + m):(self.onsets[b] + min_length + m)]
             syllable_correlation.append((sum(sum(syll_1*syll_2))/max_overlap)*100)
+            # x = ((sum(sum(syll_1 * syll_2)) / max_overlap) * 100
+            # x = ((sum((syll_1 * syll_2).sum()) / max_overlap) * 100
+            # syllable_correlation[m] =
+            # syllable_correlation[m] = (sum(sum(syll_1 * syll_2)) / max_overlap) * 100
+            # syllable_correlation[m] = 100.*((syll_1 * syll_2).sum()).sum() / max_overlap
+            syllable_correlation[m] = m_overlap*((syll_1 * syll_2).sum()).sum()
+            # s2.append((sum(sum(syll_1 * syll_2)) / max_overlap) * 100)
 
         return syllable_correlation
 
@@ -226,6 +238,7 @@ class SyllableAnalysis(object):
 
         return syllable_stereotypy
 
+
     def get_syllable_stats(self, syllable_durations, num_syllables, corr_thresh=50):
         # get syllable correlations for entire sonogram
         sonogram_correlation, sonogram_correlation_binary = self.get_sonogram_correlation(syllable_durations,
@@ -278,6 +291,7 @@ class SyllableAnalysis(object):
         props = regionprops(labeled_sonogram)
 
         return num_notes, props
+
 
     def get_note_stats(self, num_syllables, note_size_thresh=60):
         num_notes, props = self.get_notes()
@@ -334,13 +348,20 @@ directory_doubleRes = 'C:/Users/abiga\Box Sync\Abigail_Nicole\TestingGUI\Testing
 directory_oneBout = 'C:/Users/abiga\Box Sync\Abigail_Nicole\TestingGUI\white crowned sparrows for ' \
                     'testing\OneBout\SegSyllsOutput_20171024_T160406/'
 
-directory = directory_doubleRes
-files = glob.glob(directory + '*.gzip')
-output_file = directory + "/AnalysisOutput_" + time.strftime("%Y%m%d_T%H%M%S")
+directory = 'C:\Users\James Pino\PycharmProjects\SongAnalysisGUI\SegSyllsOutput_20171022_T193442/'
+# directory = directory_doubleRes
 
-for f in files:
-    SyllableAnalysis(f, output_file)
 
+
+if __name__ == '__main__':
+    files = glob.glob(directory + '*.gzip')
+    output_file = directory + "/AnalysisOutput_" + time.strftime(
+        "%Y%m%d_T%H%M%S")
+    import os
+    for f in os.listdir(directory):
+        if f.endswith('gzip'):
+            f = os.path.join(directory, f)
+            SyllableAnalysis(f, output_file)
 
 
 
