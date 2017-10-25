@@ -351,17 +351,26 @@ directory_oneBout = 'C:/Users/abiga\Box Sync\Abigail_Nicole\TestingGUI\white cro
 directory = 'C:\Users\James Pino\PycharmProjects\SongAnalysisGUI\SegSyllsOutput_20171022_T193442/'
 # directory = directory_doubleRes
 
-
+def func(f):
+    print(f)
+    return f + 'hols'
 
 if __name__ == '__main__':
     files = glob.glob(directory + '*.gzip')
     output_file = directory + "/AnalysisOutput_" + time.strftime(
         "%Y%m%d_T%H%M%S")
     import os
-    for f in os.listdir(directory):
-        if f.endswith('gzip'):
-            f = os.path.join(directory, f)
-            SyllableAnalysis(f, output_file)
+    # for f in os.listdir(directory):
+    #     if f.endswith('gzip'):
+    #         f = os.path.join(directory, f)
+    #         SyllableAnalysis(f, output_file)
+    #
+
+    import multiprocessing as mp
+
+    p = mp.Pool(4)
+    x = p.map(func, os.listdir(directory))
+    print(x)
 
 
 
